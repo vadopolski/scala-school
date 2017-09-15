@@ -5,6 +5,8 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.event.Logging
 import akka.pattern.ask
+
+import scala.concurrent.Await
 import scala.concurrent.duration._
 
 
@@ -39,5 +41,5 @@ object AkkaExample extends App {
   myActor ! "another test"
   myActor ! "another test"
 
-  system.shutdown()
+  Await.ready(system.terminate(), Duration.Inf)
 }

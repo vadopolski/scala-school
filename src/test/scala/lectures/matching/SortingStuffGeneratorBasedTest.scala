@@ -36,7 +36,7 @@ class SortingStuffGeneratorBasedTest extends WordSpec with Matchers with Propert
   val interestingBookGen = bookGenerator.filter(_.isInteresting)
 
   // Override configuration if you need
-  implicit override val generatorDrivenConfig =
+  implicit override val generatorDrivenConfig: PropertyCheckConfiguration =
     PropertyCheckConfig(minSize = 10, maxSize = 20)
 
   val get: AfterWord = new AfterWord("have")
