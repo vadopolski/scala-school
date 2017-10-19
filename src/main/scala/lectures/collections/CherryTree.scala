@@ -13,7 +13,7 @@ sealed trait CherryTree[+T] extends LinearSeq[T]
   override def last: T = ???
   def append[S >: T](x: S): CherryTree[S]
   def prepend[S >: T](x: S): CherryTree[S] = ???
-  def concat[S >: T](xs: S): CherryTree[S] = ???
+  def concat[S >: T](xs: CherryTree[S]): CherryTree[S] = ???
   override def toString(): String = super.toString()
   override def companion = CherryTree
   override def stringPrefix: String = "CherryTree"
@@ -29,7 +29,7 @@ sealed trait CherryTree[+T] extends LinearSeq[T]
     if (isDefaultCBF(bf)) prepend(elem).asInstanceOf[That] else super.:+(elem)
 
   override def ++[B >: T, That](that: GenTraversableOnce[B])(implicit bf: CanBuildFrom[CherryTree[T], B, That]) =
-    if (isDefaultCBF(bf)) concat(that).asInstanceOf[That] else super.++(that)
+    if (isDefaultCBF(bf)) concat(that.asInstanceOf[CherryTree[B]]).asInstanceOf[That] else super.++(that)
 }
 case object CherryNil extends CherryTree[Nothing] {
   override def head = throw new NoSuchElementException("head of empty CherryList")
