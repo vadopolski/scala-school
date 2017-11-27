@@ -89,7 +89,6 @@ object Streams {
 
     for (_ <- intSum; _ <- doubleSum) system.terminate()
 
-
   }
 
 }
