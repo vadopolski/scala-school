@@ -21,12 +21,13 @@ import scala.io.StdIn
 
 object ChatServer {
   implicit val system = untyped.ActorSystem("websocket-chat", ConfigFactory.load("chat.conf"))
-  val hub = Hub()
   implicit val materializer = ActorMaterializer()
   implicit val timeout = Timeout(1.second)
   implicit def sched = system.scheduler
 
   import system.dispatcher
+
+  val hub = Hub()
 
   def chatUser(hub: ActorRef[Hub.Message]): Flow[Message, Message, NotUsed] = {
     val sessionRef = ActorRef(hub ? Hub.NewSession)
@@ -53,10 +54,10 @@ object ChatServer {
 
     val output: Source[Message, NotUsed] =
       Source.actorRef[Out](1000, OverflowStrategy.dropHead)
-      .mapMaterializedValue { ref =>
-        sessionRef ! Session.Init(hub, ref)
-        NotUsed
-      }.map(mess => TextMessage(mess.asJson.spaces2))
+        .mapMaterializedValue { ref =>
+          sessionRef ! Session.Init(hub, ref)
+          NotUsed
+        }.map(mess => TextMessage(mess.asJson.spaces2))
 
     Flow.fromSinkAndSource(input, output)
   }
@@ -67,11 +68,13 @@ object ChatServer {
 
   def main(args: Array[String]): Unit = {
     Http().bindAndHandle(route, "0.0.0.0", 9889).flatMap { bnd =>
-      println(s"bound to ${bnd.localAddress }")
+      println(s"bound to ${bnd.localAddress}")
       println(s"enter `stop` to shutdown")
       while (StdIn.readLine().trim != "stop") {}
       bnd.unbind()
-    }.flatMap(_ => system.terminate())
+    }
+      .flatMap(_ => system.terminate())
+      .flatMap(_ => hub.terminate())
   }
 }
 
