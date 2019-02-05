@@ -1,11 +1,13 @@
 package lectures.akka.chat
 
-import akka.typed.scaladsl.Actor
-import akka.typed.scaladsl.Actor.MutableBehavior
-import akka.typed.{ActorRef, ActorSystem, Behavior, scaladsl}
+import akka.actor.typed.scaladsl.AbstractBehavior
+import akka.actor.typed.{ActorRef, ActorSystem, Behavior, scaladsl}
 import akka.{actor => untyped}
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.LazyLogging
+import untyped.BootstrapSetup
+import untyped.typed.scaladsl.ActorContext
+import untyped.typed.scaladsl.Behaviors
 
 object Hub extends LazyLogging {
   sealed trait Message
@@ -15,15 +17,14 @@ object Hub extends LazyLogging {
   final case class NewSession(respond: ActorRef[ActorRef[Session.Message]]) extends Message
   final case class NewChat(name: String) extends Message
 
-  def adapt()(implicit usys: untyped.ActorSystem): ActorSystem[Hub.Message] =
-    ActorSystem.adapter[Message]("chat-hub", behaiour)
 
-  def apply(name: String = "chat-hub", config: Option[Config] = None) = ActorSystem(behaiour, name, config = config)
+  def apply(name: String = "chat-hub", config: Option[Config] = None) =
+    config.fold(ActorSystem(behaviour, name))(ActorSystem(behaviour, name, _))
 
-  def behaiour: Behavior[Message] = Actor.mutable(ctx => new Behave(ctx))
+  def behaviour: Behavior[Message] = Behaviors.setup(new Behave(_))
 
 
-  class Behave(ctx: scaladsl.ActorContext[Message]) extends MutableBehavior[Message] {
+  class Behave(ctx: ActorContext[Message]) extends AbstractBehavior[Message] {
     var chats = Map.empty[String, ActorRef[Chat.Message]]
     def onMessage(msg: Message): Behavior[Message] = {
       msg match {
@@ -39,7 +40,7 @@ object Hub extends LazyLogging {
         case NewChat(name)                 =>
           chats += name -> ctx.spawn(Chat.behavior(name), s"chat-$name")
       }
-      Actor.same
+      Behaviors.same
     }
   }
 
