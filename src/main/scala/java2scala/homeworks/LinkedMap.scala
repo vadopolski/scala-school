@@ -7,7 +7,7 @@ sealed trait LinkedMap[K, V] {
 
   def apply(key: K): Option[V] = ???
 
-  def updated(key: K, value: V): LinkedMap[K, V] = ???
+  def update(key: K, value: V): LinkedMap[K, V] = ???
 
   def ++(other: LinkedMap[K, V]): LinkedMap[K, V] = ???
 

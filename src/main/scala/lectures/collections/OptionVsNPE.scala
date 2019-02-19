@@ -13,7 +13,7 @@ import scala.util.Random
   * * * * * Если ресурс не получен, кидать ResourceException (throw new ResourceException)
   * * * * * Если ресурс удачно получен, на его основе получить Connection
   * * * * * Если соединение не получено, пробовать, пока соединение не будет получено
-  * * * * * Вызвать у соединения метод result()
+  * * * * * Вызвать у соединения метод result
   * * * * * Если метод result возвращает Null, заменить его дефолтным сообщением из объекта Connection
   *
   * Для успешного решения задания:
@@ -52,7 +52,7 @@ case class Connection(resource: Resource) {
   private val defaultResult = "something went wrong!"
 
   //ConnectionProducer.result(this)
-  def result(): String = ???
+  def result: String = ???
 }
 
 case class Resource(name: String)

@@ -36,7 +36,7 @@ object ChatServer {
           val input: Sink[Message, NotUsed] = Flow[Message].collect { case mes: TextMessage => mes }
             .mapAsync(1) { mes =>
               val builder = StringBuilder.newBuilder
-              mes.textStream.runForeach(builder ++= _).map(_ => builder.result())
+              mes.textStream.runForeach(builder ++= _).map(_ => builder.result)
             }
             .map(parse)
             .collect { case Right(json) => json.as[In] }

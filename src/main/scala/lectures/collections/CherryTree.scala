@@ -81,7 +81,7 @@ object CherryTree extends SeqFactory[CherryTree] {
     private[this] var coll: CherryTree[T] = CherryNil
     def +=(elem: T) = {coll = coll.append(elem); this }
     def clear(): Unit = coll = CherryNil
-    def result(): CherryTree[T] = coll
+    def result: CherryTree[T] = coll
   }
 
   implicit def canBuildFrom[A]: CanBuildFrom[Coll, A, CherryTree[A]] =
