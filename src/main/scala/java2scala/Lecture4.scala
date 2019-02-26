@@ -93,9 +93,25 @@ object Lecture4 extends App {
   println(transformInt(6, plusS(4, _)))
   println(transformInt(6, plusM(4)))
 
-    
+  sealed trait EvenList[A]
 
+  case class EvenNil[A]()                               extends EvenList[A]
+  case class EvenCons[A](x: A, y: A, tail: EvenList[A]) extends EvenList[A]
 
+  def sumOdd(lst: EvenList[Int]): Int = lst match {
+    case EvenNil()            => 0
+    case EvenCons(x, y, rest) => y + sumOdd(rest)
+  }
+
+  def range(from: Int, to: Int): EvenList[Int] = {
+    def go(to: Int, acc: EvenList[Int]): EvenList[Int] =
+      if (from >= to - 1) acc
+      else go(to - 2, EvenCons(to - 2, to - 1, acc))
+
+    go(to, EvenNil())
+  }
+
+  println(range(1, 1000))
 //  println(plus(2)(3))
 //  println(plus2a(2)(3))
 
