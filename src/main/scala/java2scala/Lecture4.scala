@@ -93,25 +93,74 @@ object Lecture4 extends App {
   println(transformInt(6, plusS(4, _)))
   println(transformInt(6, plusM(4)))
 
-  sealed trait EvenList[A]
-
-  case class EvenNil[A]()                               extends EvenList[A]
-  case class EvenCons[A](x: A, y: A, tail: EvenList[A]) extends EvenList[A]
-
-  def sumOdd(lst: EvenList[Int]): Int = lst match {
-    case EvenNil()            => 0
-    case EvenCons(x, y, rest) => y + sumOdd(rest)
+  sealed trait EvenList[A] {
+    override def toString = {
+      val builder = StringBuilder.newBuilder
+      builder append "EvenList("
+      def go(lst: EvenList[A]): Unit = lst match {
+        case EvenNil() =>
+        case cons: EvenCons[A] =>
+          builder append cons.x
+          builder append ", "
+          builder append cons.y
+          builder append ", "
+          go(cons.tail)
+      }
+      go(this)
+      builder append ")"
+      builder.result()
+    }
   }
 
-  def range(from: Int, to: Int): EvenList[Int] = {
-    def go(to: Int, acc: EvenList[Int]): EvenList[Int] =
-      if (from >= to - 1) acc
-      else go(to - 2, EvenCons(to - 2, to - 1, acc))
-
-    go(to, EvenNil())
+  case class EvenNil[A]() extends EvenList[A]
+  case class EvenCons[A](x: A, y: A, tail0: () => EvenList[A]) extends EvenList[A] {
+    lazy val tail = tail0()
   }
 
-  println(range(1, 1000))
+  object EvenCons {
+    def apply[A](x: A, y: A, tail: => EvenList[A]): EvenCons[A] = EvenCons(x, y, () => tail)
+  }
+
+//  def sumOdd(lst: EvenList[Int]): Int = lst match {
+//    case EvenNil()            => 0
+//    case EvenCons(x, y, rest) => y + sumOdd(rest())
+//  }
+//
+//  val sumOddA: EvenList[Int] => Int = {
+//    case EvenNil()            => 0
+//    case EvenCons(x, y, rest) => y + sumOddA(rest())
+//  }
+
+  def app[A, B](x: A, f: A => B): B = f(x)
+
+//  def range(from: Int, to: Int): EvenList[Int] = {
+//    def go(to: Int, acc: EvenList[Int]): EvenList[Int] =
+//      if (from >= to - 1) acc
+//      else go(to - 2, new EvenCons(to - 2, to - 1, acc))
+//
+//    go(to, EvenNil())
+//  }
+
+  def range2(from: Int, to: Int): EvenList[Int] =
+    if (from >= to - 1) EvenNil()
+    else EvenCons(from, from + 1, range2(from + 2, to))
+//  {
+//    def go(to: Int, acc: EvenList[Int]): EvenList[Int] =
+//      if (from >= to - 1) acc
+//      else go(to - 2, new EvenCons(to - 2, to - 1, acc))
+//
+//    go(to, EvenNil())
+//  }
+
+//  println(range(1, 1000))
+//  println(app(range(1, 100), sumOddA))
+//  println(app[EvenList[Int], Int](range(1, 100), {
+//    case EvenNil()            => 0
+//    case EvenCons(x, y, rest) => x + ???
+//  }))
+
+  println(app[EvenList[Int], Unit](range2(1, 10000000), _ => ()))
+  println(app[EvenList[Int], String](range2(1, 10000), _.toString))
 //  println(plus(2)(3))
 //  println(plus2a(2)(3))
 
