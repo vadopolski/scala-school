@@ -55,9 +55,11 @@ object Lecture3 extends App {
   println(Mix(Green, Green).show)
 
   println(null == Red)
-  println(Red == null)                                                                                  println(Mix(Red, Red).show)  println(Red == 2)
-  println(Mix(Red, Red).show)  println(Red == 2)
-
+  println(Red == null)
+  println(Mix(Red, Red).show)
+  println(Red == 2)
+  println(Mix(Red, Red).show)
+  println(Red == 2)
 
   println(100000 == (100000: Integer))
   println(100000 eq (100000: Integer))
