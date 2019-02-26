@@ -47,14 +47,20 @@ object Lecture3 extends App {
   println(Base(Green).show)
   println(Mix(Red, Blue).show)
   println(Mix(Red, Red).show)
+  println(Red == 2)
+  println(Mix(Red, Red).show)
+  println(Red == 2)
+
   println(Mix(Blue, Red).show)
   println(Mix(Green, Green).show)
 
   println(null == Red)
-  println(Red == null)
+  println(Red == null)                                                                                  println(Mix(Red, Red).show)  println(Red == 2)
+  println(Mix(Red, Red).show)  println(Red == 2)
+
 
   println(100000 == (100000: Integer))
   println(100000 eq (100000: Integer))
   println(127 eq (127: Integer))
-  
+
 }
