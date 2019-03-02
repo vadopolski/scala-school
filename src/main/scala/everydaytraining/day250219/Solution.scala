@@ -2,6 +2,16 @@ package everydaytraining.day250219
 
 object Solution {
 
+//  case class X
+//
+//  val x:X = new X
+//
+//  x match {
+//    case X => println("X")
+//    case _ =>
+//  }
+
+
   def findMinCost(grid: Array[Array[Int]], i: Int, j: Int): Int = {
     if(i == grid.length -1 && j == grid(0).length - 1) return grid(i)(j)
 
@@ -20,9 +30,16 @@ object Solution {
   }
 
   def main(args: Array[String]): Unit = {
-    val arr = Array(Array(1, 3, 1), Array(1, 5, 1), Array(4, 2, 1))
+//    val arr = Array(Array(1, 3, 1), Array(1, 5, 1), Array(4, 2, 1))
+//
+//    val i = minPathSum(arr)
+//    print(i)
+    val  x = 1
+    x match {
+      case 1 =>
+      case 2 =>  println("ok")
+      case _ =>  println("not ok")
+    }
 
-    val i = minPathSum(arr)
-    print(i)
   }
 }
