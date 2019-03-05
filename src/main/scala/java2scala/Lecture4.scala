@@ -113,12 +113,12 @@ object Lecture4 extends App {
   }
 
   case class EvenNil[A]() extends EvenList[A]
-  case class EvenCons[A](x: A, y: A, tail0: () => EvenList[A]) extends EvenList[A] {
-    lazy val tail = tail0()
+  class EvenCons[A](x: A, y: A, tail0: => EvenList[A]) extends EvenList[A] {
+    lazy val tail = tail0(())
   }
 
   object EvenCons {
-    def apply[A](x: A, y: A, tail: => EvenList[A]): EvenCons[A] = EvenCons(x, y, () => tail)
+    def apply[A](x: A, y: A, tail: => EvenList[A]): EvenCons[A] = EvenCons(x, y, _ => tail)
   }
 
 //  def sumOdd(lst: EvenList[Int]): Int = lst match {
