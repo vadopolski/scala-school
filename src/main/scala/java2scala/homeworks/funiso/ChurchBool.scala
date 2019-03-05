@@ -5,7 +5,7 @@ trait ChurchBool {
 
   def toBool: Boolean = ???
 
-  def unary_! : ChurchBool = ???
+  def unary_! : ChurchBool             = ???
   def &&(that: ChurchBool): ChurchBool = ???
   def ||(that: ChurchBool): ChurchBool = ???
 }
