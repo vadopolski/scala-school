@@ -26,7 +26,6 @@ target
 **/project/project/target
 
 # WorkSheet files
-*.sc
 
 # test logs
 /catalina.home_IS_UNDEFINED
