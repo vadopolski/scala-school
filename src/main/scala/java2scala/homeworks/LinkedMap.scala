@@ -20,7 +20,7 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
 
   /** возвращает новый LinkedMap[K, V],
     * в котором добавлено или изменено значение для ключа `key` на `value` */
-  def update(key: K, value: V): LinkedMap[K, V]  =new LinkedMap[K, V] {} /*{
+  def update(key: K, value: V): LinkedMap[K, V] = new LinkedMap[K, V] {} /*{
     val map: LinkedMap[K, V] = new LinkedMap[K, V] {}
     for ((k, v) <- this.toList) {
       map.update(k, v)
@@ -36,12 +36,12 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
     for (k <- this.toMap.keys) {
       map ++ LinkedMap(k -> this.toMap.get(k))
     }
-    return map
+    map
   }
 
   /** создаёт новый LinkedMap, состоящий из элементов `this` и `other`
     * если какой-то ключ встречается в обеих коллекциях,
-    * может быть выбрано любое значение */
+    * может быть выбрано любое значение*/
   def ++(other: LinkedMap[K, V]): LinkedMap[K, V] = {
     val map: LinkedMap[K, V] = new LinkedMap[K, V] {}
     for ((k, v) <- this.toMap) {
@@ -50,7 +50,7 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
     for ((k, v) <- other.toMap) {
       map.update(k, v)
     }
-    return map
+    map
   }
 
   /** создаёт новый LinkedMap , где ко всем значениям применена заданная функция */
@@ -59,27 +59,27 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
     for ((k, v) <- this.toMap) {
       map.update(k, f(v))
     }
-    return map
+    map
   }
 
   /** создаёт новый LinkedMap , где ко всем значениям применена заданная функция,
-    * учитывающая ключ */
+    * учитывающая ключ*/
   def mapWithKey[W](f: (K, V) => W): LinkedMap[K, W] = {
     val map: LinkedMap[K, W] = new LinkedMap[K, W] {}
     for ((k, v) <- this.toMap) {
       map.update(k, f(k, v))
     }
-    return map
+    map
   }
 
   /** конструирует новый LinkedMap, содеоржащий все записи текущего, кроме заданного ключа */
   def delete(key: K): LinkedMap[K, V] = {
     val map: LinkedMap[K, V] = new LinkedMap[K, V] {}
-    for ((k, v) <- this.toMap;
+    for ((k, v) <- this.toMap
          if k != key) {
       map.update(k, v)
     }
-    return map
+    map
   }
 
   /** применяет действие `action` с побочным эффектом ко всем элементам коллекции */
@@ -89,7 +89,6 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
     }
   } */
 }
-
 
 object LinkedMap {
 
