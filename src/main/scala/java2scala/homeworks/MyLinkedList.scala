@@ -1,24 +1,30 @@
 package java2scala.homeworks
 
-sealed trait MyLinkedList[T] {
-  def add(element: T): MyLinkedList[T]
+sealed trait MyLinkedList[+T] {
+  def add[S >: T](element: S): MyLinkedList[S]
 }
 
-object MyLinkedList {
-  def apply[T](kvs: T*): MyLinkedList[T]
-
-  final case class Cons[T](element: T, rest: MyLinkedList[T]) extends MyLinkedList[T] {
-    override def add(element: T): MyLinkedList[T] = ???
+case object MyLinkedList {
+  def apply[T](elements: T*): MyLinkedList[T] = {
+    if (elements.isEmpty) {
+      Empty
+    } else {
+      Cons(elements.head, apply(elements.tail: _*))
+    }
   }
-  final case class Empty[T]() extends MyLinkedList[T] {
-    override def add(element: T): MyLinkedList[T] = ???
+
+  final case class Cons[+T](element: T, rest: MyLinkedList[T]) extends MyLinkedList[T] {
+    def add[S >: T](el: S) = Cons(el, Cons(element, rest))
   }
-}
 
-object ConsTutorialDriver extends App {
-  val list = MyLinkedList[String]()
+  case object Empty extends MyLinkedList[Nothing] {
+    override def add[S >: Nothing](x: S): MyLinkedList[S] = Cons(x, Empty)
+  }
 
-  list.add("First")
-  list.add("Second")
-  list.add("Third")
+  def main(args: Array[String]): Unit = {
+    val list = MyLinkedList[String]("Fisrt")
+    val list2 = list.add("Second")
+    val list3 = list.add("Third")
+    println("Test")
+  }
 }
