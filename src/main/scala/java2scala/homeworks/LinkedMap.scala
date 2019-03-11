@@ -1,12 +1,26 @@
 package java2scala.homeworks
 
+import java2scala.homeworks.LinkedMap.{Empty, Cons}
+
+
 sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
 
   /** должен вернуть `false` если коллекция содержит хотя бы один элемент */
-  override def isEmpty: Boolean = ???
+  override def isEmpty: Boolean = {
+    this match {
+      case Empty() => true
+      case Cons(_, _, _) => false
+    }
+  }
 
   /** должен вернуть `true` если коллекция содержит ключ `key` */
-  def contains(key: K): Boolean = ???
+  def contains(key: K): Boolean = {
+    this match {
+      case Cons(k, _, _) if key == k => true
+      case Cons(k, _, t) if key != k => t.contains(key)
+      case Empty() => false
+    }
+  }
 
   /** возвращает Some со значением значения, если коллекция содержит ключ `key`
     * и None если не содержит */
@@ -46,8 +60,28 @@ object LinkedMap {
     * если в исходных данныхх ключ встречается несколько раз, может быть
     * выбрано любое из значений
     */
-  def apply[K, V](kvs: (K, V)*): LinkedMap[K, V] = ???
+  def apply[K, V](kvs: (K, V)*): LinkedMap[K, V] = {
+    if  (kvs.isEmpty) {
+      Empty[K,V]
+    } else {
+      val (key, value) = kvs.head
+      Cons(key, value, apply(kvs.tail:_*))
+    }
+  }
 
   final case class Cons[K, V](key: K, value: V, rest: LinkedMap[K, V]) extends LinkedMap[K, V]
   final case class Empty[K, V]()                                       extends LinkedMap[K, V]
+
+  def main(args: Array[String]): Unit = {
+    val first = LinkedMap(1-> "Test2", 2-> "Test3")
+    val empty = LinkedMap[Int, String]()
+
+    println("Is Empty")
+    println(first.isEmpty)
+    println(empty.isEmpty)
+
+    println("Contains")
+    println(first.contains(1))
+    println(empty.contains(1))
+  }
 }

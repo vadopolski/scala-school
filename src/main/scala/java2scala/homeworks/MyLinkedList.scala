@@ -7,18 +7,18 @@ sealed trait MyLinkedList[+T] {
 case object MyLinkedList {
   def apply[T](elements: T*): MyLinkedList[T] = {
     if (elements.isEmpty) {
-      Empty
+      EmptyLL
     } else {
-      Cons(elements.head, apply(elements.tail: _*))
+      ConsLL(elements.head, apply(elements.tail: _*))
     }
   }
 
-  final case class Cons[+T](element: T, rest: MyLinkedList[T]) extends MyLinkedList[T] {
-    def add[S >: T](el: S) = Cons(el, Cons(element, rest))
+  final case class ConsLL[+T](element: T, rest: MyLinkedList[T]) extends MyLinkedList[T] {
+    def add[S >: T](el: S) = ConsLL(el, ConsLL(element, rest))
   }
 
-  case object Empty extends MyLinkedList[Nothing] {
-    override def add[S >: Nothing](x: S): MyLinkedList[S] = Cons(x, Empty)
+  case object EmptyLL extends MyLinkedList[Nothing] {
+    override def add[S >: Nothing](x: S): MyLinkedList[S] = ConsLL(x, EmptyLL)
   }
 
   def main(args: Array[String]): Unit = {
