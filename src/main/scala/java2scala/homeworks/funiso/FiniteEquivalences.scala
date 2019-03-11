@@ -13,4 +13,4 @@ object FiniteEquivalences {
   val boolToBool_ToBool: Equivalent[(Boolean => Boolean) => Boolean, FILL_ME] = ???
 
   val threeToUnit: Equivalent[Three => Unit, FILL_ME] = ???
-  val unitToThree: Equivalent[Unit => Three, FILL_ME] = ???
+  val unitToThree: Equivalent[Unit => Three, FILL_ME] = ???}
