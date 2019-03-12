@@ -96,14 +96,14 @@ object Lecture4 extends App {
   sealed trait EvenList[A] {
     override def toString = {
       val builder = StringBuilder.newBuilder
-      builder append "EvenList("
+      builder ++= "EvenList("
       def go(lst: EvenList[A]): Unit = lst match {
         case EvenNil() =>
         case cons: EvenCons[A] =>
-          builder append cons.x
-          builder append ", "
-          builder append cons.y
-          builder append ", "
+          builder ++= cons.x.toString
+          builder ++= ", "
+          builder ++= cons.y.toString
+          builder ++= ", "
           go(cons.tail)
       }
       go(this)
@@ -113,12 +113,12 @@ object Lecture4 extends App {
   }
 
   case class EvenNil[A]() extends EvenList[A]
-  class EvenCons[A](x: A, y: A, tail0: => EvenList[A]) extends EvenList[A] {
-    lazy val tail = tail0(())
+  class EvenCons[A](val x: A, val y: A, tail0: => EvenList[A]) extends EvenList[A] {
+    lazy val tail = tail0
   }
 
   object EvenCons {
-    def apply[A](x: A, y: A, tail: => EvenList[A]): EvenCons[A] = EvenCons(x, y, _ => tail)
+    def apply[A](x: A, y: A, tail: => EvenList[A]): EvenCons[A] = new EvenCons(x, y, tail)
   }
 
 //  def sumOdd(lst: EvenList[Int]): Int = lst match {
