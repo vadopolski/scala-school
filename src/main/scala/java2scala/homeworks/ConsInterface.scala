@@ -7,7 +7,7 @@ sealed trait ConsInterface[+A] {
   def next: ConsInterface[A]
 }
 
-case class Cons[+A] (val value: A, val next: ConsInterface[A]) extends ConsInterface[A] {
+case class ConsI[+A](val value: A, val next: ConsInterface[A]) extends ConsInterface[A] {
   override def toString = s"head: $value, next: $next"
 }
 
@@ -18,9 +18,9 @@ object NilCons extends ConsInterface[Nothing] {
 
 
 object ConsTutorialDriver extends App {
-  val c1 = Cons(1, NilCons)
-  val c2 = Cons(2, c1)
-  val c3 = Cons(3, c2)
+  val c1 = ConsI(1, NilCons)
+  val c2 = ConsI(2, c1)
+  val c3 = ConsI(3, c2)
   println(c1)
   println(c2)
   println(c3)
