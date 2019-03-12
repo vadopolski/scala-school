@@ -55,15 +55,31 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
 
   /** создаёт новый LinkedMap, состоящий из элементов `this` и `other`
     * если какой-то ключ встречается в обеих коллекциях,
-    * может быть выбрано любое значение*/
-  def ++(other: LinkedMap[K, V]): LinkedMap[K, V] = ???
+    * может быть выбрано любое значение */
+  def ++(other: LinkedMap[K, V]): LinkedMap[K, V] = {
+    this match {
+      case Cons(key, value, tail) if other.contains(key) => Cons(key, value, tail.++(other.delete(key)))
+      case Cons(key, value, tail) if !other.contains(key) => Cons(key, value, tail.++(other))
+      case Empty() => other
+    }
+  }
 
   /** создаёт новый LinkedMap , где ко всем значениям применена заданная функция */
-  def mapValues[W](f: V => W): LinkedMap[K, W] = ???
+  def mapValues[W](f: V => W): LinkedMap[K, W] = {
+    this match {
+      case Cons(key, value, tail) => Cons(key, f(value), tail.mapValues(f))
+      case Empty() => Empty()
+    }
+  }
 
   /** создаёт новый LinkedMap , где ко всем значениям применена заданная функция,
     * учитывающая ключ*/
-  def mapWithKey[W](f: (K, V) => W): LinkedMap[K, W] = ???
+  def mapWithKey[W](f: (K, V) => W): LinkedMap[K, W] = {
+    this match {
+      case Cons(key, value, tail) => Cons(key, f(key, value), tail.mapWithKey(f))
+      case Empty() => Empty()
+    }
+  }
 
   /** конструирует новый LinkedMap, содеоржащий все записи текущего, кроме заданного ключа */
   def delete(key: K): LinkedMap[K, V] = ???
