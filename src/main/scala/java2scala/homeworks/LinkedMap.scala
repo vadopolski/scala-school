@@ -45,7 +45,13 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
 
   /** возвращает новый LinkedMap[K, V]
     * состоящий из тех же позиций, но в обратном порядке */
-  def reverse: LinkedMap[K, V] = ???
+  def reverse: LinkedMap[K, V] = {
+    foldLeft(LinkedMap[K, V]()) {
+      (acc, entry) =>
+        val (key, value) = entry
+        Cons(key, value, acc)
+    }
+  }
 
   /** создаёт новый LinkedMap, состоящий из элементов `this` и `other`
     * если какой-то ключ встречается в обеих коллекциях,
