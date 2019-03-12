@@ -24,11 +24,24 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
 
   /** возвращает Some со значением значения, если коллекция содержит ключ `key`
     * и None если не содержит */
-  def apply(key: K): Option[V] = ???
+  def apply(key: K): Option[V] = {
+    this match {
+      case Cons(k, v, _) if key == k => Some(v)
+      case Cons(k, _, t) if key != k => t.apply(key)
+      case Empty() => None
+    }
+  }
 
   /** возвращает новый LinkedMap[K, V],
     * в котором добавлено или изменено значение для ключа `key` на `value` */
-  def update(key: K, value: V): LinkedMap[K, V] = ???
+  def update(key: K, value: V): LinkedMap[K, V] = {
+    this match {
+      case Cons(k, _, t) if k == key => Cons(key, value, t.update(key, value))
+      case Cons(k, _, t) if k != key => t.update(key, value)
+      case Empty() => Cons(key, value, Empty())
+    }
+  }
+
 
   /** возвращает новый LinkedMap[K, V]
     * состоящий из тех же позиций, но в обратном порядке */
@@ -50,7 +63,15 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
   def delete(key: K): LinkedMap[K, V] = ???
 
   /** применяет действие `action` с побочным эффектом ко всем элементам коллекции */
-  def foreach[U](action: ((K, V)) => U): Unit = ???
+  def foreach[U](action: ((K, V)) => U): Unit = {
+    this match {
+      case Cons(key, value, tail) => {
+        action((key, value))
+        tail.foreach(action)
+      }
+      case Empty() => None
+    }
+  }
 }
 
 object LinkedMap {
@@ -76,12 +97,9 @@ object LinkedMap {
     val first = LinkedMap(1-> "Test2", 2-> "Test3")
     val empty = LinkedMap[Int, String]()
 
-    println("Is Empty")
-    println(first.isEmpty)
-    println(empty.isEmpty)
-
-    println("Contains")
-    println(first.contains(1))
-    println(empty.contains(1))
+    first.foreach(print)
+    val updated = first.update(3, "FuckTest")
+    println()
+    updated.foreach(print)
   }
 }
