@@ -82,7 +82,13 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
   }
 
   /** конструирует новый LinkedMap, содеоржащий все записи текущего, кроме заданного ключа */
-  def delete(key: K): LinkedMap[K, V] = ???
+  def delete(key: K): LinkedMap[K, V] = {
+      this match {
+        case Cons(k, v, tail) if k!=key => Cons(k, v, tail.delete(key))
+        case Cons(k, _, tail) if k==key => tail.delete(key)
+        case Empty()                    => Empty()
+      }
+    }
 
   /** применяет действие `action` с побочным эффектом ко всем элементам коллекции */
   def foreach[U](action: ((K, V)) => U): Unit = {
