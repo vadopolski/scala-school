@@ -50,6 +50,10 @@ libraryDependencies += "io.circe" %% "circe-generic"        % circeVersion
 libraryDependencies += "io.circe" %% "circe-parser"         % circeVersion
 libraryDependencies += "io.circe" %% "circe-generic-extras" % circeVersion
 
+libraryDependencies += scalaOrganization.value % "scala-reflect" % scalaVersion.value
+libraryDependencies += scalaOrganization.value % "scala-compiler" % scalaVersion.value
+
+
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging"  % "3.7.2"
 libraryDependencies += "ch.qos.logback"             % "logback-classic" % "1.2.3"
 
