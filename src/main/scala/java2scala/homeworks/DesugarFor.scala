@@ -5,8 +5,6 @@ import scala.tools.reflect._
 object DesugarFor extends App{
   val toolbox = currentMirror.mkToolBox()
 
-  val xxx = List(1, 2, 3)
-
   val tree = toolbox.parse(
     """
       |for {
