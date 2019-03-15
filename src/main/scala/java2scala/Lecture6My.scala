@@ -22,12 +22,14 @@ object Lecture6My extends App {
 //    z <- List(x + y)
 //  } yield s"{x=$x + y=$y + z=$z")
 //
+
 //  val  res = for{
 //    x <- List(1,2,3)
 //    y <- List.fill(x)(x)
 //    z <- List(x + y)
 //  } yield s"{x=$x + y=$y + z=$z"
 //  res.foreach(println)
+
 //
 //  val  res1 = for{
 //    x <- List(1,2,3)
@@ -158,7 +160,6 @@ object Lecture6My extends App {
     z <- Option(x + y)
   } yield s"{x=$x + y=$y + i = $i}"
   res16.foreach(println)
-
 
 
 }
