@@ -8,15 +8,15 @@ class CherryTreeSuite extends FlatSpec with PropertyChecks with Matchers {
 
   override implicit val generatorDrivenConfig = PropertyCheckConfiguration(sizeRange = 1000)
 
-  "Cherry tree" should "append element" in forAll { (x: Int, xs: Vector[Int]) =>
-    val tree = CherryTree(xs: _*)
-    tree.append(x) shouldBe CherryTree(xs :+ x: _*)
-  }
-
-  it should "prepend element" in forAll { (x: Int, xs: Vector[Int]) =>
-    val tree = CherryTree(xs: _*)
-    tree.prepend(x) shouldBe CherryTree(x +: xs: _*)
-  }
+//  "Cherry tree" should "append element" in forAll { (x: Int, xs: Vector[Int]) =>
+//    val tree = CherryTree(xs: _*)
+//    tree.append(x) shouldBe CherryTree(xs :+ x: _*)
+//  }
+//
+//  it should "prepend element" in forAll { (x: Int, xs: Vector[Int]) =>
+//    val tree = CherryTree(xs: _*)
+//    tree.prepend(x) shouldBe CherryTree(x +: xs: _*)
+//  }
 //
 //  it should "get tail" in forAll { xs: Vector[Int] =>
 //    val tree = CherryTree(xs: _*)

@@ -36,8 +36,8 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
     * в котором добавлено или изменено значение для ключа `key` на `value` */
   def update(key: K, value: V): LinkedMap[K, V] = {
     this match {
-      case Cons(k, _, t) if k == key => Cons(key, value, t.update(key, value))
-      case Cons(k, _, t) if k != key => t.update(key, value)
+      case Cons(k, _, tail) if k == key => Cons(k, value, tail.update(key, value))
+      case Cons(k, v, tail) if k != key => Cons(k, v, tail.update(key, value))
       case Empty() => Cons(key, value, Empty())
     }
   }
@@ -46,10 +46,9 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
   /** возвращает новый LinkedMap[K, V]
     * состоящий из тех же позиций, но в обратном порядке */
   def reverse: LinkedMap[K, V] = {
-    foldLeft(LinkedMap[K, V]()) {
-      (acc, entry) =>
-        val (key, value) = entry
-        Cons(key, value, acc)
+    foldLeft(LinkedMap[K, V]()) { (acc, entry) =>
+      val (key, head) = entry
+      Cons(key, head, acc)
     }
   }
 
@@ -58,37 +57,24 @@ sealed trait LinkedMap[K, V] extends Traversable[(K, V)] {
     * может быть выбрано любое значение */
   def ++(other: LinkedMap[K, V]): LinkedMap[K, V] = {
     this match {
-      case Cons(key, value, tail) if other.contains(key) => Cons(key, value, tail.++(other.delete(key)))
-      case Cons(key, value, tail) if !other.contains(key) => Cons(key, value, tail.++(other))
+      case Cons(k, v, t) => Cons(k, v, t.++(other))
       case Empty() => other
     }
   }
 
   /** создаёт новый LinkedMap , где ко всем значениям применена заданная функция */
-  def mapValues[W](f: V => W): LinkedMap[K, W] = {
-    this match {
-      case Cons(key, value, tail) => Cons(key, f(value), tail.mapValues(f))
-      case Empty() => Empty()
-    }
-  }
+  def mapValues[W](f: V => W): LinkedMap[K, W] = ???
 
   /** создаёт новый LinkedMap , где ко всем значениям применена заданная функция,
-    * учитывающая ключ*/
-  def mapWithKey[W](f: (K, V) => W): LinkedMap[K, W] = {
-    this match {
-      case Cons(key, value, tail) => Cons(key, f(key, value), tail.mapWithKey(f))
-      case Empty() => Empty()
-    }
-  }
+    * учитывающая ключ */
+  def mapWithKey[W](f: (K, V) => W): LinkedMap[K, W] = ???
 
   /** конструирует новый LinkedMap, содеоржащий все записи текущего, кроме заданного ключа */
-  def delete(key: K): LinkedMap[K, V] = {
-      this match {
-        case Cons(k, v, tail) if k!=key => Cons(k, v, tail.delete(key))
-        case Cons(k, _, tail) if k==key => tail.delete(key)
-        case Empty()                    => Empty()
-      }
-    }
+  def delete(key: K): LinkedMap[K, V] = this match {
+    case Cons(k, _, t) if key == k => t.delete(key)
+    case Cons(k, v, t) if key != k => Cons(k, v, t.delete(key))
+    case Empty() => Empty()
+  }
 
   /** применяет действие `action` с побочным эффектом ко всем элементам коллекции */
   def foreach[U](action: ((K, V)) => U): Unit = {
@@ -110,24 +96,27 @@ object LinkedMap {
     * выбрано любое из значений
     */
   def apply[K, V](kvs: (K, V)*): LinkedMap[K, V] = {
-    if  (kvs.isEmpty) {
-      Empty[K,V]
+    if (kvs.isEmpty) {
+      Empty[K, V]
     } else {
       val (key, value) = kvs.head
-      Cons(key, value, apply(kvs.tail:_*))
+      Cons(key, value, apply(kvs.tail: _*))
     }
   }
 
   final case class Cons[K, V](key: K, value: V, rest: LinkedMap[K, V]) extends LinkedMap[K, V]
-  final case class Empty[K, V]()                                       extends LinkedMap[K, V]
+
+  final case class Empty[K, V]() extends LinkedMap[K, V]
 
   def main(args: Array[String]): Unit = {
-    val first = LinkedMap(1-> "Test2", 2-> "Test3")
-    val empty = LinkedMap[Int, String]()
+    val first = LinkedMap(1 -> "Test1", 2 -> "Test2")
 
     first.foreach(print)
-    val updated = first.update(3, "FuckTest")
-    println()
-    updated.foreach(print)
+    val deleted = first.delete(2)
+    println
+    deleted.foreach(print)
+    println
+    val sum = deleted ++ first
+    sum.foreach(print)
   }
 }
