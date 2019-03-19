@@ -20,6 +20,11 @@ object Lecture7 extends IOApp {
       res <- elapsed(seconds + 1)
     } yield res
 
+  def elapsed2(seconds: Long = 0): IO[Nothing] =
+    printlnIO(s"$seconds seconds elapsed") *>
+      Timer[IO].sleep(1 second) *>
+      elapsed(seconds + 1)
+
   val waitForEnter = printlnIO("press Enter to exit") <* readLn
 
   val app = for {
@@ -30,7 +35,7 @@ object Lecture7 extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] =
     for {
-      _ <- (Timer[IO].sleep(1 millisecond) *> elapsed()).start
+      res <- (Timer[IO].sleep(1 millisecond) *> elapsed()).start
       _ <- waitForEnter
     } yield ExitCode.Success
 }
