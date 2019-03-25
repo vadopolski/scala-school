@@ -1,3 +1,5 @@
+package java2scala.homeworks
+
 import java2scala.homeworks.CharAutomata.{And, Or}
 
 trait CharAutomata[+A] {
@@ -11,7 +13,7 @@ trait CharAutomata[+A] {
   /** потребить строку символ за символом */
   def apply(source: String): Either[String, A] = {
     source.size > 0 match {
-      case true  => consume(source.charAt(0)).apply(source.substring(1))
+      case true => consume(source.charAt(0)).apply(source.substring(1))
       case false => result
     }
   }
@@ -64,14 +66,14 @@ object CharAutomata {
   }
 
   /** класс для реализации метода `const` */
-  class Const[A] private[CharAutomata] (value: A) extends CharAutomata[A] {
+  class Const[A] private[CharAutomata](value: A) extends CharAutomata[A] {
     def consume(char: Char): CharAutomata[A] = this
 
     def result: Either[String, A] = Right(value)
   }
 
   /** класс для реализации метода `find` */
-  class Find private[CharAutomata] (substring: String) extends CharAutomata[Int] {
+  class Find private[CharAutomata](substring: String) extends CharAutomata[Int] {
     var buffer: String = ""
 
     def consume(char: Char): CharAutomata[Int] = {
@@ -82,7 +84,7 @@ object CharAutomata {
     def result: Either[String, Int] = {
       val index = buffer.indexOf(substring)
       index >= 0 match {
-        case true  => Right(index)
+        case true => Right(index)
         case false => Left("substring not found")
       }
     }
@@ -96,7 +98,7 @@ object CharAutomata {
       char match {
         case '(' => parenthesisCount += 1
         case ')' => parenthesisCount -= 1
-        case _   =>
+        case _ =>
       }
       this
     }
@@ -111,7 +113,7 @@ object CharAutomata {
 
   /** класс для реализации метода `parseInt` */
   class ParseInteger private[CharAutomata] extends CharAutomata[BigInt] {
-    var bufferFull        = false
+    var bufferFull = false
     var intBuffer: String = ""
 
     def consume(char: Char): CharAutomata[BigInt] = {
@@ -127,14 +129,14 @@ object CharAutomata {
 
     def result: Either[String, BigInt] = {
       intBuffer match {
-        case ""    => Right(BigInt(0))
+        case "" => Right(BigInt(0))
         case value => Right(BigInt(value))
       }
     }
   }
 
   /** класс для реализации метода `and` */
-  class And[A, B] private[CharAutomata] (autoA: CharAutomata[A], autoB: CharAutomata[B]) extends CharAutomata[(A, B)] {
+  class And[A, B] private[CharAutomata](autoA: CharAutomata[A], autoB: CharAutomata[B]) extends CharAutomata[(A, B)] {
     def consume(char: Char): CharAutomata[(A, B)] = {
       autoA.consume(char)
       autoB.consume(char)
@@ -147,7 +149,7 @@ object CharAutomata {
         case Right(a) => {
           autoB.result match {
             case Left(str) => Left(str)
-            case Right(b)  => Right(a, b)
+            case Right(b) => Right(a, b)
           }
         }
       }
@@ -155,7 +157,7 @@ object CharAutomata {
   }
 
   /** класс для реализации метода `or` */
-  class Or[A, B] private[CharAutomata] (autoA: CharAutomata[A], autoB: CharAutomata[B]) extends CharAutomata[Either[A, B]] {
+  class Or[A, B] private[CharAutomata](autoA: CharAutomata[A], autoB: CharAutomata[B]) extends CharAutomata[Either[A, B]] {
     def consume(char: Char): CharAutomata[Either[A, B]] = {
       autoA.consume(char)
       autoB.consume(char)
@@ -168,7 +170,7 @@ object CharAutomata {
         case Left(_) => {
           autoB.result match {
             case Left(str) => Left(str)
-            case Right(b)  => Right(Right(b))
+            case Right(b) => Right(Right(b))
           }
         }
       }
