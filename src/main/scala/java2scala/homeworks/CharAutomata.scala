@@ -46,17 +46,17 @@ object CharAutomata {
     * первое вхождение строчки `substring`
     * или ошибкой
     */
-  def find(substring: String): CharAutomata[Int] = new Find(substring)
+  def find(substring: String): CharAutomata[Int] = new Find("",substring)
 
   /** создаёт автомат, определяющий является ли строчка,
     * если исключить из неё все символы, кроме `'('` и `')'`
     * корректной скобочной последовательностью */
-  def balance: CharAutomata[Unit] = new ParenBalance()
+  def balance: CharAutomata[Unit] = new ParenBalance(0)
 
   /** создаёт автомат, ищущий первое число, из цифр подряд
     * и возвращающий результат в качестве BigInt либо 0
     */
-  def parseInt: CharAutomata[BigInt] = new ParseInteger
+  def parseInt: CharAutomata[BigInt] = new ParseInteger("", false)
 
   /** класс для реализации метода `error` */
   class Error(string: String) extends CharAutomata[Nothing] {
@@ -73,38 +73,33 @@ object CharAutomata {
   }
 
   /** класс для реализации метода `find` */
-  class Find private[CharAutomata](substring: String) extends CharAutomata[Int] {
-    var buffer: String = ""
-
+  class Find private[CharAutomata] (string: String, substring: String) extends CharAutomata[Int] {
     def consume(char: Char): CharAutomata[Int] = {
-      buffer += char
-      this
+      new Find(string.concat(char.toString), substring)
     }
 
     def result: Either[String, Int] = {
-      val index = buffer.indexOf(substring)
-      index >= 0 match {
-        case true => Right(index)
+      val index = string.indexOf(substring)
+      index>=0 match {
+        case true =>  Right(index)
         case false => Left("substring not found")
       }
     }
   }
 
   /** класс для реализации метода `balance` */
-  class ParenBalance private[CharAutomata] extends CharAutomata[Unit] {
-    var parenthesisCount: Int = 0
-
+  class ParenBalance  private[CharAutomata] (res: Int) extends CharAutomata[Unit] {
     def consume(char: Char): CharAutomata[Unit] = {
       char match {
-        case '(' => parenthesisCount += 1
-        case ')' => parenthesisCount -= 1
-        case _ =>
+        case '(' => new ParenBalance(res+1)
+        case ')' => new ParenBalance(res-1)
+        case _ =>  this
       }
-      this
     }
 
+
     def result: Either[String, Unit] = {
-      parenthesisCount match {
+      res match {
         case 0 => Right()
         case _ => Left("parenthesis are not balanced")
       }
@@ -112,19 +107,13 @@ object CharAutomata {
   }
 
   /** класс для реализации метода `parseInt` */
-  class ParseInteger private[CharAutomata] extends CharAutomata[BigInt] {
-    var bufferFull = false
-    var intBuffer: String = ""
-
+  class ParseInteger private[CharAutomata]  (intBuffer: String, bufferFull: Boolean) extends CharAutomata[BigInt] {
     def consume(char: Char): CharAutomata[BigInt] = {
       char.isDigit match {
-        case true => if (!bufferFull) intBuffer += char
-        case false => {
-          intBuffer = intBuffer.replaceAll("^0+", "")
-          if (intBuffer.size > 0) bufferFull = true
-        }
+        case true if (!bufferFull) => new ParseInteger(intBuffer.concat(char.toString), false)
+        case true if (bufferFull) => this
+        case false => new ParseInteger(intBuffer.replaceAll("^0+", ""), intBuffer.size > 0)
       }
-      this
     }
 
     def result: Either[String, BigInt] = {
@@ -136,11 +125,9 @@ object CharAutomata {
   }
 
   /** класс для реализации метода `and` */
-  class And[A, B] private[CharAutomata](autoA: CharAutomata[A], autoB: CharAutomata[B]) extends CharAutomata[(A, B)] {
+  class And[A, B] private[CharAutomata] (autoA: CharAutomata[A], autoB: CharAutomata[B]) extends CharAutomata[(A, B)] {
     def consume(char: Char): CharAutomata[(A, B)] = {
-      autoA.consume(char)
-      autoB.consume(char)
-      this
+      new And(autoA.consume(char),autoB.consume(char))
     }
 
     def result: Either[String, (A, B)] = {
@@ -149,7 +136,7 @@ object CharAutomata {
         case Right(a) => {
           autoB.result match {
             case Left(str) => Left(str)
-            case Right(b) => Right(a, b)
+            case Right(b) => Right(a,b)
           }
         }
       }
@@ -159,9 +146,7 @@ object CharAutomata {
   /** класс для реализации метода `or` */
   class Or[A, B] private[CharAutomata](autoA: CharAutomata[A], autoB: CharAutomata[B]) extends CharAutomata[Either[A, B]] {
     def consume(char: Char): CharAutomata[Either[A, B]] = {
-      autoA.consume(char)
-      autoB.consume(char)
-      this
+      new Or(autoA.consume(char),autoB.consume(char))
     }
 
     def result: Either[String, Either[A, B]] = {
