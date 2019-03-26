@@ -17,15 +17,12 @@ object Lecture8 extends IOApp {
         complete("Hello World")
       } ~
         pathPrefix("users") {
-          path("one") {
-            complete("Hello, One")
-          } ~
-            path("two") {
-              complete("Hello, Two")  
-            } ~
-            path("three") {
-              reject(MyRejection)
-            }
+          parameter("id".as[Int]) { id =>
+            complete(s"hello, $id")
+          }
+        } ~
+        pathPrefix("products" / IntNumber / LongNumber / Segment) { (num, num2, str) =>
+          complete(s"product[$num, $num2] : $str") // http://localhost:8080/products/3/5/etert
         }
     }
 
