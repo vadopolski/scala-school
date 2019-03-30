@@ -7,11 +7,7 @@ object DesugarFor extends App{
 
   val tree = toolbox.parse(
     """
-      |for {
-      |   x      <- List(1, 2, 3)
-      |   y      <- List.range(0, x)
-      |   (z, i) <- List.range(y, x).zipWithIndex
-      |} yield result(x, y, z)
+      |for((x, i) <- xs.zipWithIndex) yield x + i
     """.stripMargin
   )
 
