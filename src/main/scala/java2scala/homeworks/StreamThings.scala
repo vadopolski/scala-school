@@ -1,13 +1,17 @@
 package java2scala.homeworks
 
-object StreamThings {
+import scala.math.sqrt
+
+object StreamThings extends App{
 
   /** простые числа - имеющие ровно два делителя, себя и 1. Числа 2,3,5,7,11...
     * необходимо реализовать с помощью `isPrime`*/
-  val primes: Stream[Long] = ???
+//  val primes: Stream[Long] = ???
 
   /** проверка на простоту числа - нужно сделать с помощью `primes` */
-  def isPrime(n: Long): Boolean = ???
+  def isPrime(n: Long): Boolean = n > 1 && (2L to sqrt(n).toLong).forall(x => n % x != 0)
+
+//  (1 to 100).filter(x => isPrime(x)).foreach(println(_))
 
   /** последовательность Коллатца для выбранного числа
     * C(0) = n,
