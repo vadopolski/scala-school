@@ -1,4 +1,4 @@
-package java2scala.homeworks.funiso
+package java2scala.homeworks.funcs
 
 /** simple type with three elements */
 sealed trait Three
