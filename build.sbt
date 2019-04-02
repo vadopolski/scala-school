@@ -60,3 +60,4 @@ libraryDependencies += "ch.qos.logback"             % "logback-classic" % "1.2.3
 libraryDependencies += "com.chuusai" %% "shapeless" % "2.3.3"
 
 addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M11" cross CrossVersion.patch)
+addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0-M4")
