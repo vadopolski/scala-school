@@ -8,6 +8,7 @@ import cats.effect.concurrent.{Deferred, MVar}
 
 import scala.concurrent.duration._
 import cats.implicits._
+import cats.effect.syntax.all._
 
 trait ChurchList[A] { self =>
   def fold[R](z: Eval[R])(ag: A => Eval[R] => Eval[R]): Eval[R]
@@ -73,29 +74,23 @@ object Lecture9IO extends IOApp {
       res  <- produce(name, mvar, idx + 1)
     } yield res
 
-  def consumer(name: String, mvar: MVar[IO, (String, Double)], promise: Deferred[IO, String], limit: Double = 10): IO[Nothing] =
+  def consumer(name: String, mvar: MVar[IO, (String, Double)], limit: Double = 10): IO[String] =
     for {
       _                  <- IO(println(s"consuming $name left $limit"))
       (pinger, quantity) <- mvar.take
       time               <- currentTime
       _                  <- IO(println(s"$name received $quantity from $pinger $time"))
       _                  <- Timer[IO].sleep(1.4 second)
-      _                  <- if (limit < quantity) promise.complete(name) else IO.unit
-      res                <- consumer(name, mvar, promise, limit - quantity)
+      res                <- if (limit > quantity) consumer(name, mvar, limit - quantity) else IO(name)
     } yield res
 
   val process: IO[Unit] = for {
-//    List(x, y)   <- MVar[IO].empty[(String, Double)].replicateA(2)
-    x <- MVar[IO].empty[(String, Double)]
-    y <- MVar[IO].empty[(String, Double)]
-//    List(p1, p2) <- Deferred[IO, String].replicateA(2)
-    p       <- Deferred[IO, String]
-    bob     <- consumer("Bob", x, p).start
-    oleg    <- consumer("Oleg", y, p, 1000).start
+    x       <- MVar[IO].empty[(String, Double)]
+    y       <- MVar[IO].empty[(String, Double)]
     charlie <- produce("Charlie", x).start
     alice   <- produce("Alice", x).start
     stas    <- produce("Stas", y).start
-    name    <- p.get
+    name    <- consumer("Bob", x).race(consumer("Oleg", y, 1000))
     _       <- IO(println(s"completed $name"))
   } yield ()
 
