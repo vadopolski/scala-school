@@ -4,7 +4,7 @@ import java.time.Instant
 
 import cats.Eval
 import cats.effect.{ExitCode, IO, IOApp, Timer}
-import cats.effect.concurrent.MVar
+import cats.effect.concurrent.{Deferred, MVar}
 
 import scala.concurrent.duration._
 import cats.implicits._
@@ -63,34 +63,40 @@ object Lecture9IO extends IOApp {
     for (millis <- Timer[IO].clock.realTime(MILLISECONDS))
       yield Instant.ofEpochMilli(millis).toString
 
-  def ping(name: String, mvar: MVar[IO, String], idx: Int = 0): IO[Nothing] =
+  def produce(name: String, mvar: MVar[IO, (String, Double)], idx: Int = 0): IO[Nothing] =
     for {
-      _    <- IO(println(s"pinging $name $idx"))
-      _    <- mvar.put(name)
+      _    <- IO(println(s"producing $name $idx"))
+      _    <- mvar.put(name -> (idx * 0.5))
       time <- currentTime
-      _    <- IO(println(s"pinged $name $idx $time"))
+      _    <- IO(println(s"produced $name $idx $time"))
       _    <- Timer[IO].sleep(1.1 second)
-      res  <- ping(name, mvar, idx + 1)
+      res  <- produce(name, mvar, idx + 1)
     } yield res
 
-  def pong(name: String, mvar: MVar[IO, String], idx: Int = 0): IO[Nothing] =
+  def consumer(name: String, mvar: MVar[IO, (String, Double)], promise: Deferred[IO, String], limit: Double = 10): IO[Nothing] =
     for {
-      _      <- IO(println(s"ponging $name $idx"))
-      pinger <- mvar.take
-      time   <- currentTime
-      _      <- IO(println(s" $name received ping from $pinger $time"))
-      _      <- Timer[IO].sleep(1.4 second)
-      res    <- pong(name, mvar, idx + 1)
+      _                  <- IO(println(s"consuming $name left $limit"))
+      (pinger, quantity) <- mvar.take
+      time               <- currentTime
+      _                  <- IO(println(s"$name received $quantity from $pinger $time"))
+      _                  <- Timer[IO].sleep(1.4 second)
+      _                  <- if (limit < quantity) promise.complete(name) else IO.unit
+      res                <- consumer(name, mvar, promise, limit - quantity)
     } yield res
 
   val process: IO[Unit] = for {
-    List(x, y) <- MVar[IO].empty[String].replicateA(2)
-    bob        <- pong("Bob", x).start
-    oleg       <- pong("Oleg", y).start
-    charlie    <- ping("Charlie", x).start
-    alice      <- ping("Alice", x).start
-    stas       <- ping("Stas", y).start
-    _          <- Timer[IO].sleep(5 minutes)
+//    List(x, y)   <- MVar[IO].empty[(String, Double)].replicateA(2)
+    x <- MVar[IO].empty[(String, Double)]
+    y <- MVar[IO].empty[(String, Double)]
+//    List(p1, p2) <- Deferred[IO, String].replicateA(2)
+    p       <- Deferred[IO, String]
+    bob     <- consumer("Bob", x, p).start
+    oleg    <- consumer("Oleg", y, p, 1000).start
+    charlie <- produce("Charlie", x).start
+    alice   <- produce("Alice", x).start
+    stas    <- produce("Stas", y).start
+    name    <- p.get
+    _       <- IO(println(s"completed $name"))
   } yield ()
 
   def run(args: List[String]): IO[ExitCode] = process as ExitCode.Success
