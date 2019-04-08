@@ -25,5 +25,5 @@ object StreamThings extends App{
   val fibonacci: Stream[Long] = 1L #:: 1L #:: (??? : Stream[Long])
 
   /** построить бесконечный цикл из конечного числа элементов, используя O(`as.length`) памяти */
-  def cycle[A](as: A*): Stream[A] = ???
+  def cycle[A](as: A*): Stream[A] = as.toStream
 }
