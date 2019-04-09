@@ -9,7 +9,7 @@ final case class Product(
     id: UUID,
     name: String,
     description: String,
-    price: Price
+    price: Option[Price]
 )
 
 @JsonCodec

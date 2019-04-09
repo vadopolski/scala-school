@@ -9,6 +9,8 @@ import io.circe.parser._
 import scala.collection.JavaConverters._
 import cats.implicits._
 
+import scala.concurrent.ExecutionContext
+
 trait ProductStore {
   def all: IO[List[Product]]
 
@@ -33,7 +35,7 @@ object ProductStore {
       }
       .map(byId => new ListStore(products, byId.toMap))
 
-  def fromResource(name: String, blocking: ContextShift[IO]): IO[ProductStore] = {
+  def fromResource(name: String, blocking: ExecutionContext)(implicit basic: ContextShift[IO]): IO[ProductStore] = {
     val read: IO[List[Product]] = IO {
       val stream = getClass.getResourceAsStream(name)
       val reader = new BufferedReader(new InputStreamReader(stream))
@@ -45,6 +47,7 @@ object ProductStore {
       _        <- IO.shift(blocking)
       products <- read
       store    <- makeListStore(products)
+      _        <- IO.shift(basic)
     } yield store
   }
 }

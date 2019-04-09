@@ -48,4 +48,7 @@ object IOCartStore {
         case None      => State(byID + (id -> cartRef), byUser + (userId -> cartRef)) -> cartRef
       }
   }
+
+  def create: IO[CartStore] =
+    for (ref <- Ref[IO].of(State(Map(), Map()))) yield IOCartStore(ref)
 }
