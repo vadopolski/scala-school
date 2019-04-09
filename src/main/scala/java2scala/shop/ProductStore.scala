@@ -17,6 +17,10 @@ trait ProductStore {
   def getById(id: UUID): IO[Option[Product]]
 
   def byId(id: UUID): IO[Product] = getById(id).flatMap(_.liftTo[IO](ProductNotFound(id)))
+//  def byId(id: UUID): IO[Product] = getById(id).flatMap{
+//    case Some(product) => IO.pure(product)
+//    case None => IO.raiseError(ProductNotFound(id))
+//  }
 }
 
 object ProductStore {

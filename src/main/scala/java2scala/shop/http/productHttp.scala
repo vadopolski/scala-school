@@ -10,5 +10,4 @@ object productHttp {
     pathPrefix("product")(
       (get & path("all"))(complete(store.all))
     )
-
 }

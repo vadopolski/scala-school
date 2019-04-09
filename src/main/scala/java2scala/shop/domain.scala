@@ -14,9 +14,9 @@ final case class Product(
 
 @JsonCodec
 final case class Price(
-    minerals: BigDecimal,
-    gas: BigDecimal,
-    supply: BigDecimal
+    minerals: Option[BigDecimal],
+    gas: Option[BigDecimal],
+    supply: Option[BigDecimal]
 )
 
 @JsonCodec

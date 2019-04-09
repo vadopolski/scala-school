@@ -2,22 +2,37 @@
   {
     "id": "2ba1ec6e-5ac4-11e9-9022-6f45462a67f6",
     "name": "Drone",
-
+    "price": {
+      "minerals": 50,
+      "supply": 1
+    },
     "description": "basic worker unit for Zerg"
   },
   {
     "id": "2ba2490c-5ac4-11e9-844e-dfda4f939c0b",
     "name": "Overlord",
+    "price": {
+      "minerals": 100
+    },
     "description": "flying supply unit"
   },
   {
     "id": "2ba2b89c-5ac4-11e9-8535-473dd236f4a3",
     "name": "Zergling",
+    "price": {
+      "minerals": 50,
+      "supply": 0.5
+    },
     "description": "small and fast melee attacker"
   },
   {
     "id": "2ba31616-5ac4-11e9-a4f9-7bd3cba06388",
     "name": "Baneling",
+    "price": {
+      "minerals": 25,
+      "gas": 25,
+      "supply": 1
+    },
     "description": "suicide bomber"
   },
   {
