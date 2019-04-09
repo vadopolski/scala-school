@@ -11,4 +11,22 @@ object Lecture10 extends App {
 
   println(fibonacci[Int].take(1000).force)
   println(fibonacci[BigInt].take(1000).force)
+
+  final class Wrapped(val int: Int) {
+    def bar = int - 1
+  }
+
+  implicit def wrap1[A](a: A)(implicit conv: A => Int): Wrapped = new Wrapped(conv(a))
+
+  final class Wrapped2(w: Wrapped) {
+    def foo = w.int + 1
+  }
+
+  implicit def wrap2[A](a: A)(implicit conv: A => Wrapped): Wrapped2 = new Wrapped2(conv(a))
+
+
+  1.bar
+
+  2.foo
+
 }
