@@ -10,6 +10,7 @@ final case class Product(
 object Filter extends App {
   final case class ColorIs(color: String)     extends Filter
   final case class PriceLT(upper: BigDecimal) extends Filter
+  final case class And(x: Filter, y: Filter)  extends Filter
 
   def show(filter: Filter): String = filter match {
     case ColorIs(color) => s"color = $color"
