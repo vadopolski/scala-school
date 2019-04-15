@@ -2,6 +2,9 @@ package java2scala.tagless
 
 import java2scala.tagless.FilterTF.colorIs
 
+
+
+
 trait FilterTF[T] {
   def colorIs(color: String): T
   def priceLT(upper: BigDecimal): T

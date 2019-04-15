@@ -61,6 +61,8 @@ libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging"  % "3.7.2
 libraryDependencies += "ch.qos.logback"             % "logback-classic" % "1.2.3"
 
 libraryDependencies += "com.chuusai" %% "shapeless" % "2.3.3"
+libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.16.0"
 
 addCompilerPlugin("org.scalameta" % "paradise"            % "3.0.0-M11" cross CrossVersion.patch)
 addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.0-M4")
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.0")
