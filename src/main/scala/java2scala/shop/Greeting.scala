@@ -1,11 +1,8 @@
 package java2scala.shop
 
 import akka.actor.{ActorRef, ActorSystem}
-import cats.effect.concurrent.Ref
 import cats.effect.{ContextShift, IO}
 import java2scala.shop.actors.Greeter
-import cats.syntax.apply._
-import java2scala.shop.actors.Greeter.CancelCont
 
 import scala.concurrent.duration.FiniteDuration
 

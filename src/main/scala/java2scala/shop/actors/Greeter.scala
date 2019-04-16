@@ -1,8 +1,7 @@
-package java2scala.shop.actors
+package java2scala.shop
+package actors
 
 import akka.actor.{Actor, Props}
-import cats.effect.IO
-import cats.effect.concurrent.Ref
 import java2scala.shop.actors.Greeter.{Message, Respond}
 
 import scala.concurrent.duration.FiniteDuration
@@ -26,7 +25,7 @@ class Greeter extends Actor {
 }
 
 object Greeter{
-  type CancelCont[A] = (A => Unit) => () => Unit
+
   case class Message(name: String, continue: CancelCont[String] => Unit, dur: FiniteDuration)
   case class Respond(name: String, ack: String => Unit)
 
