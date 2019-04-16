@@ -5,26 +5,23 @@ import cats.effect.concurrent.Ref
 import cats.effect.{ContextShift, IO}
 import java2scala.shop.actors.Greeter
 import cats.syntax.apply._
+import java2scala.shop.actors.Greeter.CancelCont
 
 import scala.concurrent.duration.FiniteDuration
 
 final class Greeting(actor: ActorRef) {
   def greet(name: String, duration: FiniteDuration)(implicit cs: ContextShift[IO]): IO[String] =
     for {
-      ref <- Ref[IO].of(() => ())
+      cont <- IO.async[CancelCont[String]] { cont =>
+               actor ! Greeter.Message(
+                 name,
+                 s => cont(Right(s)),
+                 duration,
+               )
+             }
       res <- IO.cancelable[String] { k =>
-              actor ! Greeter.Message(
-                name,
-                s => k(Right(s)),
-                duration,
-                f => ref.set(f).unsafeRunSync()
-              )
-
-              ref.get.flatMap(g =>
-                IO {
-                  println("cancelation executed")
-                  g()
-              })
+              val f = cont(s => k(Right(s)))
+              IO(f())
             }
     } yield res
 
