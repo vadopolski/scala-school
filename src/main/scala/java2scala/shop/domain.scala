@@ -24,12 +24,25 @@ final case class User(
     id: UUID,
     name: String
 )
+object User {
+  implicit val key: Key[User] = new Key[User] {
+    def key(a: User): UUID              = a.id
+    def notFound(uuid: UUID): Throwable = UserNotFound(uuid)
+  }
+}
 
 @JsonCodec
 final case class ProductItem(
     productId: UUID,
     quantity: BigDecimal
 )
+
+object ProductItem {
+  implicit val key: Key[ProductItem] = new Key[ProductItem] {
+    def key(a: ProductItem): UUID       = a.productId
+    def notFound(uuid: UUID): Throwable = ProductNotFound(uuid)
+  }
+}
 
 @JsonCodec
 final case class Cart(
@@ -47,4 +60,5 @@ abstract class StacklessException(message: String) extends Exception(message, nu
 
 final case class ProductNotFound(id: UUID)  extends StacklessException(s"Product $id not found")
 final case class MultipleProducts(id: UUID) extends StacklessException(s"Product $id not found")
-final case class CartNotFound(id: UUID) extends StacklessException(s"Cart $id not found")
+final case class CartNotFound(id: UUID)     extends StacklessException(s"Cart $id not found")
+final case class UserNotFound(id: UUID)     extends StacklessException(s"Cart $id not found")
