@@ -6,10 +6,11 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import cats.effect.{ExitCode, IO, IOApp, Resource}
-import java2scala.shop.http.productHttp
+import java2scala.shop.http.resourceHttp
 
 import scala.concurrent.ExecutionContext
 import cats.implicits._
+import akka.http.scaladsl.server.Directives._
 
 object Shop extends IOApp {
 
@@ -32,9 +33,11 @@ object Shop extends IOApp {
     blocking.use { blockingCS =>
       for {
         cartStore    <- IOCartStore.create
-        productStore <- ProductStore.fromResource("/shop/products.json", blockingCS)
-        route1       = productHttp.route(productStore)
-        _            <- runServer(route1)
+        productStore <- SimpleStore.fromResource[Product]("/shop/products.json", blockingCS)
+        userStore    <- SimpleStore.fromResource[User]("/shop/users.json", blockingCS)
+        productRoute = resourceHttp.route("product", productStore)
+        userRoute    = resourceHttp.route("user", userStore)
+        _            <- runServer(productRoute ~ userRoute)
         _            <- IO.never
       } yield ExitCode.Success
     }

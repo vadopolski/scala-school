@@ -3,11 +3,12 @@ package java2scala.shop.http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import cats.effect.IO
-import java2scala.shop.ProductStore
+import io.circe.Encoder
+import java2scala.shop.{ProductStore, SimpleStore}
 
-object productHttp {
-  def route(store: ProductStore): Route =
-    pathPrefix("product")(
+object resourceHttp {
+  def route[A: Encoder](prefix: String, store: SimpleStore[A]): Route =
+    pathPrefix(prefix)(
       (get & path("all"))(complete(store.all))
     )
 }

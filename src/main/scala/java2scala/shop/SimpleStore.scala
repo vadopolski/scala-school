@@ -5,8 +5,11 @@ import java.util.UUID
 import cats.effect.{ContextShift, IO}
 import io.circe.Decoder
 import cats.implicits._
+
 import scala.collection.JavaConverters._
 import io.circe.parser._
+
+import scala.concurrent.ExecutionContext
 
 trait SimpleStore[A] {
   def all: IO[List[A]]
@@ -30,11 +33,12 @@ object SimpleStore {
       .toList
       .traverse {
         case (id, List(a)) => IO.pure(id -> a)
-        case (id, _)       => IO.raiseError(Key.notFound[A](id))
+        case (id, _)       => IO.raiseError(Key.multiple[A](id))
       }
       .map(byId => new ListStore(items, byId.toMap))
 
-  def fromResource[A: Key: Decoder](name: String, blocking: ContextShift[IO]): IO[SimpleStore[A]] = {
+  def fromResource[A: Key: Decoder](name: String, blocking: ExecutionContext)(
+      implicit basic: ContextShift[IO]): IO[SimpleStore[A]] = {
     val read: IO[List[A]] = IO {
       val stream = getClass.getResourceAsStream(name)
       val reader = new BufferedReader(new InputStreamReader(stream))
@@ -46,6 +50,7 @@ object SimpleStore {
       _        <- IO.shift(blocking)
       products <- read
       store    <- makeListStore(products)
+      _        <- IO.shift(basic)
     } yield store
   }
 

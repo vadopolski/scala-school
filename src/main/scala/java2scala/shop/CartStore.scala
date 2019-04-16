@@ -26,6 +26,18 @@ final case class IOCartStore(state: Ref[IO, State]) extends CartStore {
         res <- state.modify(_.addNewCartRef(id, user, ref))
       } yield res
     }.flatMap(_.get)
+//    state.get
+//      .map(_.byUser.get(user))
+//      .flatMap {
+//        case Some(cart) => cart.pure[IO]
+//        case None =>
+//          for {
+//            id  <- IO(UUID.randomUUID())
+//            ref <- Ref[IO].of(Cart(id, user, Map()))
+//            res <- state.modify(_.addNewCartRef(id, user, ref))
+//          } yield res
+//      }
+//      .flatMap(_.get)
 
   private def getRef(id: UUID): IO[Ref[IO, Cart]] =
     state.get.flatMap(_.byID.get(id).liftTo[IO](CartNotFound(id)))
