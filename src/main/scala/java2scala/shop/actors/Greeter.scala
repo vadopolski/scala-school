@@ -10,14 +10,15 @@ class Greeter extends Actor {
     case Message(name, ack, dur) =>
       implicit val ec = context.system.dispatcher
       context.system.scheduler.scheduleOnce(dur, self, Respond(name, ack))
-    case Respond(name, ack) => ack(s"Hello, $name!")
+    case Respond(name, ack) =>
+      println(s"responding $name")
+      ack(s"Hello, $name!")
   }
 }
 
 object Greeter {
   case class Message(name: String, ack: String => Unit, dur: FiniteDuration)
   case class Respond(name: String, ack: String => Unit)
-
 
   def props: Props = Props[Greeter]
 }
