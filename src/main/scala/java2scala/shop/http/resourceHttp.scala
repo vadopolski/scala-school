@@ -21,8 +21,8 @@ object greeterHttp {
     pathPrefix("greet") {
       (get & parameter("name") & parameter("duration")) { (name, durStr) =>
         Duration.apply(durStr) match {
-          case Duration.Inf        => complete(StatusCodes.BadRequest)
-          case dur: FiniteDuration => complete(greeting.greet(name, dur))
+          case _: Duration.Infinite => complete(StatusCodes.BadRequest)
+          case dur: FiniteDuration  => complete(greeting.greet(name, dur))
         }
 
       }
