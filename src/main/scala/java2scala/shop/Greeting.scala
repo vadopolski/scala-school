@@ -9,10 +9,10 @@ import scala.concurrent.duration.FiniteDuration
 final class Greeting(actor: ActorRef) {
   def greet(name: String, duration: FiniteDuration)(implicit cs: ContextShift[IO]): IO[String] =
     for {
-      cont <- IO.async[CancelCont[String]] { cont =>
+      cont <- IO.async[CancelCont[String]] { k =>
                actor ! Greeter.Message(
                  name,
-                 s => cont(Right(s)),
+                 cont => k(Right(cont)),
                  duration,
                )
              }
