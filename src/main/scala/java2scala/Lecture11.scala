@@ -3,7 +3,7 @@ package java2scala
 import scala.annotation.unchecked.uncheckedVariance
 import scala.collection.mutable
 
-object Lecture11 {
+object Lecture11 extends App {
 
   abstract class X {
     def x: String
@@ -22,10 +22,13 @@ object Lecture11 {
   def barL(ys: List[Y]): String = fooL(ys)
 
   case class Pair[+A](first: A, second: A) {
-    def _1: A                                              = first
-    def withFirst(newFirst: A @uncheckedVariance): Pair[A] = Pair(newFirst, second)
+    def _1: A                     = first
+    var mid: A @uncheckedVariance = first
   }
 
+  val pairOfYs: Pair[Y] = Pair(new Y { def x = "a"; def y = 1 }, new Y { def x = "b"; def y = 2 })
+  (pairOfYs: Pair[X]).mid = new X { def x = "c" }
 
+  println(pairOfYs.mid.y)
 
 }
