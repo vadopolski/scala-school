@@ -5,7 +5,7 @@ trait ChurchBool {
 
 //  def toBool: Boolean = ???
 
-  def unary_! : ChurchBool             = ???
+  def unary_! : ChurchBool             = cif(ChurchBool.False)(ChurchBool.True)
   def &&(that: ChurchBool): ChurchBool = cif(that)(ChurchBool.False)
   def ||(that: ChurchBool): ChurchBool = cif(ChurchBool.True)(that)
 }
