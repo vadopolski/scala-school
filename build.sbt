@@ -21,6 +21,7 @@ scalacOptions := Seq(
 val akkaVersion       = "2.5.19"
 val akkaHttpVersion   = "10.1.7"
 val circeVersion      = "0.11.0"
+val circeDerVersion   = "0.11.0-M1"
 val catsVersion       = "1.6.0"
 val catsEffectVersion = "1.1.0"
 val fs2Version        = "1.0.3"
@@ -44,19 +45,24 @@ libraryDependencies += "org.typelevel" %% "cats-core"   % catsVersion
 libraryDependencies += "org.typelevel" %% "cats-effect" % catsEffectVersion
 libraryDependencies += "co.fs2"        %% "fs2-core"    % fs2Version
 libraryDependencies += "co.fs2"        %% "fs2-io"      % fs2Version
+libraryDependencies += "co.fs2"        %% "fs2-io"      % fs2Version
 
-libraryDependencies += "io.circe" %% "circe-core"           % circeVersion
-libraryDependencies += "io.circe" %% "circe-generic"        % circeVersion
-libraryDependencies += "io.circe" %% "circe-parser"         % circeVersion
-libraryDependencies += "io.circe" %% "circe-generic-extras" % circeVersion
+libraryDependencies += "io.circe" %% "circe-core"                   % circeVersion
+libraryDependencies += "io.circe" %% "circe-generic"                % circeVersion
+libraryDependencies += "io.circe" %% "circe-parser"                 % circeVersion
+libraryDependencies += "io.circe" %% "circe-generic-extras"         % circeVersion
+libraryDependencies += "io.circe" %% "circe-derivation"             % circeDerVersion
+libraryDependencies += "io.circe" %% "circe-derivation-annotations" % circeDerVersion
 
-libraryDependencies += scalaOrganization.value % "scala-reflect" % scalaVersion.value
+libraryDependencies += scalaOrganization.value % "scala-reflect"  % scalaVersion.value
 libraryDependencies += scalaOrganization.value % "scala-compiler" % scalaVersion.value
-
 
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging"  % "3.7.2"
 libraryDependencies += "ch.qos.logback"             % "logback-classic" % "1.2.3"
 
 libraryDependencies += "com.chuusai" %% "shapeless" % "2.3.3"
+libraryDependencies += "com.github.mpilquist" %% "simulacrum" % "0.16.0"
 
-addCompilerPlugin("org.scalameta" % "paradise" % "3.0.0-M11" cross CrossVersion.patch)
+addCompilerPlugin("org.scalameta" % "paradise"            % "3.0.0-M11" cross CrossVersion.patch)
+addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.0-M4")
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.0")
