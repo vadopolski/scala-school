@@ -1,11 +1,11 @@
 package java2scala.homeworks.funcs
 
 trait ChurchList[A] { self =>
-  def fold[R](z: R)(ag: A => R => R): R
-
   def ::(x: A): ChurchList[A] = new ChurchList[A] {
     def fold[R](z: R)(ag: A => R => R): R = ag(x)(self.fold(z)(ag))
   }
+
+  def fold[R](z: R)(ag: A => R => R): R
 
   def map[B](f: A => B): ChurchList[B] =
     new ChurchList[B] {
