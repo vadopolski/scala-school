@@ -3,7 +3,7 @@ package java2scala.homeworks.funcs
 trait ChurchBool {
   def cif[A](ifTrue: => A)(ifFalse: => A): A
 
-//  def toBool: Boolean = ???
+  def toBool: Boolean = cif(true)(false)
 
   def unary_! : ChurchBool             = cif(ChurchBool.False)(ChurchBool.True)
   def &&(that: ChurchBool): ChurchBool = cif(that)(ChurchBool.False)
