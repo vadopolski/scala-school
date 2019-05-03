@@ -38,6 +38,19 @@ trait ChurchList[A] { self =>
     def fold[R](z: Eval[R])(ag: A => Eval[R] => Eval[R]): Eval[R] = self.fold(that.fold(z)(ag))(ag)
   }
 
+  def drop(count: Int): ChurchList[A] =
+    self
+      .fold[Int => Eval[ChurchList[A]]](Eval.now(i => Eval.now(ChurchList.empty)))(
+        a =>
+          lf =>
+            Eval.later {
+              case 0 => lf.flatMap(f => f(0).map(a :: _))
+              case i => lf.flatMap(f => f(i - 1))
+        }
+      )
+      .value(count)
+      .value
+
   def headOption: Option[A] = fold[Option[A]](Eval.now(None))(a => b => Eval.now(Some(a))).value
 
   def toList: List[A] = fold[List[A]](Eval.now(Nil))(e => ll => ll.map(e :: _)).value
